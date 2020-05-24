@@ -19,6 +19,7 @@ CANVAS_HEIGHT = 1000    # Height of drawing canvas in pixels
 UNIT_SIZE = 50          # Size of unit block within shape
 Y_SPEED = 50
 X_SPEED = 50
+DELAY = 0.5
 
 
 def main():
@@ -84,7 +85,7 @@ def draw_grid(canvas):
 # Plays one shape until shape is placed
 def play_shape(canvas, block_locations):
     shape = make_randomized_shape(canvas)
-    canvas.bind("<Key>", lambda event: key_pressed(event, canvas, shape))
+    canvas.bind("<Key>", lambda event: key_pressed(event, canvas, shape, block_locations))
     canvas.focus_set()  # Canvas now has the keyboard focus
     make_shape_fall(canvas, shape, block_locations)
     #place_shape(canvas, shape, block_locations)
@@ -96,7 +97,7 @@ def make_shape_fall(canvas, shape, block_locations):
     while not is_touching_bottom(canvas, shape) and not is_touching_top_of_block(canvas, shape, block_locations):
         canvas.move(shape, 0, Y_SPEED)
         canvas.update()
-        time.sleep(1/10)
+        time.sleep(DELAY)
 
 
 # Places the shape when it hits the bottom or top of a block
@@ -165,6 +166,14 @@ def get_bottom_y_of_x(canvas, shape, x):
     return bottom_y
 
 
+def get_top_y_of_placed_shapes_at_x(canvas, shape, block_locations):
+    x_range = get_all_x(canvas, shape)
+    top_y_locations = []
+    for x in range(int(x_range[0] + UNIT_SIZE / 2), int(x_range[-1]), UNIT_SIZE):
+        top_y_locations.append(block_locations[x])
+    return top_y_locations
+
+
 def get_left_x(canvas, shape):
     return get_all_x(canvas, shape)[0]
 
@@ -206,7 +215,7 @@ def store_locations():
     """
     block_locations = {}
     for position in left_x_locations():
-        block_locations[position] = None
+        block_locations[position] = 1000
     values = block_locations.values()
     return block_locations, values
 
@@ -365,7 +374,11 @@ def make_canvas(width, height, title):
     return canvas
 
 
-def key_pressed(event, canvas, shape):
+def slam_it_down(canvas, shape, block_locations):
+    return get_top_y_of_placed_shapes_at_x(canvas, shape, block_locations)
+    
+
+def key_pressed(event, canvas, shape, block_locations):
     """
     Respond to different arrow keys
     This was written with the help of Code In Place Section Leader
@@ -382,7 +395,10 @@ def key_pressed(event, canvas, shape):
         canvas.coords(shape, new_points)
     elif sym == "down":
         canvas.move(shape, 0, UNIT_SIZE)
-
+    elif sym == "space":
+        pass
+        y = slam_it_down(canvas, shape, block_locations)
+        canvas.moveto(shape, 0, y[0] + UNIT_SIZE * 2)
 
 if __name__ == '__main__':
     main()
