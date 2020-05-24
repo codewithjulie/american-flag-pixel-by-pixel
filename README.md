@@ -1,1 +1,1 @@
-# american-flag-pixel-by-pixel
+# american-flag-pixel-by-pixel - Python and SimpleImage
