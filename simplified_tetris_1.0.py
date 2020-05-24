@@ -1,5 +1,5 @@
 """
-File: possible_tetris.py
+File: simplified_tetris_1.0.py
 ----------------
 This will be a very simplified version or basic stepping stone to tetris
 
